@@ -25,6 +25,17 @@ describe('API', () => {
     expect(posts).toBeDefined()
   })
 
+  it('creates a blog post with a generated slug', async () => {
+    const created = await payload.create({
+      collection: 'blog-posts',
+      data: {
+        title: 'Hello Payload',
+      },
+    })
+
+    expect(created.slug).toBe('hello-payload')
+  })
+
   it('registers blog posts in the collection config', async () => {
     const payloadConfig = await config
     const collectionSlugs = payloadConfig.collections?.map((collection) => collection.slug) ?? []
