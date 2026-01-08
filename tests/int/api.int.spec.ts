@@ -24,4 +24,10 @@ describe('API', () => {
     })
     expect(posts).toBeDefined()
   })
+
+  it('registers blog posts in the collection config', async () => {
+    const payloadConfig = await config
+    const collectionSlugs = payloadConfig.collections?.map((collection) => collection.slug) ?? []
+    expect(collectionSlugs).toContain('blog-posts')
+  })
 })
