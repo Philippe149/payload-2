@@ -17,4 +17,11 @@ describe('API', () => {
     })
     expect(users).toBeDefined()
   })
+
+  it('fetches blog posts', async () => {
+    const posts = await payload.find({
+      collection: 'blog-posts',
+    })
+    expect(posts).toBeDefined()
+  })
 })
