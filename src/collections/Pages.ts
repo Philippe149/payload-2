@@ -31,11 +31,28 @@ export const Pages: CollectionConfig = {
           typedData.slug = formatSlug(typedData.title)
         }
 
+        if (
+          (operation === 'create' || operation === 'update') &&
+          typedData.showInNavigation &&
+          typedData.title &&
+          !typedData.navigationLabel
+        ) {
+          typedData.navigationLabel = typedData.title
+        }
+
         return typedData
       },
     ],
   },
   fields: [
+    {
+      name: 'isHome',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description: 'Use this page content on the homepage.',
+      },
+    },
     {
       name: 'title',
       type: 'text',
@@ -51,6 +68,30 @@ export const Pages: CollectionConfig = {
     {
       name: 'content',
       type: 'richText',
+    },
+    {
+      name: 'showInNavigation',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description: 'Show this page in the main navigation.',
+      },
+    },
+    {
+      name: 'navigationLabel',
+      type: 'text',
+      admin: {
+        description: 'Optional label for the navigation menu.',
+        condition: (_, siblingData) => Boolean(siblingData?.showInNavigation),
+      },
+    },
+    {
+      name: 'navigationOrder',
+      type: 'number',
+      admin: {
+        description: 'Lower numbers appear first in the navigation menu.',
+        condition: (_, siblingData) => Boolean(siblingData?.showInNavigation),
+      },
     },
   ],
   timestamps: true,
