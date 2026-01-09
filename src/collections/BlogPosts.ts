@@ -7,7 +7,6 @@ export const BlogPosts: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'author', 'updatedAt'],
-    group: 'Content',
   },
   labels: {
     singular: 'Blog post',
