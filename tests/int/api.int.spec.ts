@@ -31,6 +31,7 @@ describe('API', () => {
       data: {
         title: 'Hello Payload',
       },
+      draft: true,
     })
 
     expect(created.slug).toBe('hello-payload')
@@ -40,5 +41,14 @@ describe('API', () => {
     const payloadConfig = await config
     const collectionSlugs = payloadConfig.collections?.map((collection) => collection.slug) ?? []
     expect(collectionSlugs).toContain('blog-posts')
+  })
+
+  it('exposes blog posts in the top-level admin navigation', async () => {
+    const payloadConfig = await config
+    const blogPostsCollection = payloadConfig.collections?.find(
+      (collection) => collection.slug === 'blog-posts',
+    )
+
+    expect(blogPostsCollection?.admin?.group).toBeUndefined()
   })
 })
