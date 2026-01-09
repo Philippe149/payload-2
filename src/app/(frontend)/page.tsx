@@ -23,22 +23,35 @@ export default async function HomePage() {
   const { docs: homePages } = await payload.find({
     collection: 'pages',
     limit: 1,
-    where: { slug: { equals: 'home' } },
+    where: { isHome: { equals: true } },
     overrideAccess: false,
     depth: 0,
     user,
   })
+  const [homePageFromFlag] = homePages
+  const homePage =
+    homePageFromFlag ??
+    (
+      await payload.find({
+        collection: 'pages',
+        limit: 1,
+        where: { slug: { equals: 'home' } },
+        overrideAccess: false,
+        depth: 0,
+        user,
+      })
+    ).docs[0]
   const { docs: navigationPages } = await payload.find({
     collection: 'pages',
     limit: 10,
-    sort: 'title',
+    sort: ['navigationOrder', 'title'],
+    where: { showInNavigation: { equals: true } },
     overrideAccess: false,
     depth: 0,
     user,
   })
 
   const [post] = posts
-  const [homePage] = homePages
   const homeContent =
     homePage?.content && typeof homePage.content === 'object'
       ? convertLexicalToPlaintext({ data: homePage.content })
@@ -52,7 +65,7 @@ export default async function HomePage() {
         <p className="subtitle">
           {user ? `Welcome back, ${user.email}.` : 'Welcome to the blog.'}
         </p>
-        <h1>{homePage?.title ?? post?.title ?? 'No posts yet'}</h1>
+        <h1>{homePage?.title ?? post?.title ?? 'Welcome to the blog'}</h1>
         {homeContent && <p>{homeContent}</p>}
         {!homeContent && post?.excerpt && <p>{post.excerpt}</p>}
         <div className="links">
@@ -61,7 +74,7 @@ export default async function HomePage() {
 
             return (
               <a key={page.id} href={href}>
-                {page.title}
+                {page.navigationLabel ?? page.title}
               </a>
             )
           })}

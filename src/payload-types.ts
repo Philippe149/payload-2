@@ -195,6 +195,10 @@ export interface BlogPost {
  */
 export interface Page {
   id: number;
+  /**
+   * Use this page content on the homepage.
+   */
+  isHome?: boolean | null;
   title: string;
   slug: string;
   content?: {
@@ -212,6 +216,18 @@ export interface Page {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Show this page in the main navigation.
+   */
+  showInNavigation?: boolean | null;
+  /**
+   * Optional label for the navigation menu.
+   */
+  navigationLabel?: string | null;
+  /**
+   * Lower numbers appear first in the navigation menu.
+   */
+  navigationOrder?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -353,9 +369,13 @@ export interface BlogPostsSelect<T extends boolean = true> {
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
+  isHome?: T;
   title?: T;
   slug?: T;
   content?: T;
+  showInNavigation?: T;
+  navigationLabel?: T;
+  navigationOrder?: T;
   updatedAt?: T;
   createdAt?: T;
 }

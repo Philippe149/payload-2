@@ -56,12 +56,13 @@ describe('API', () => {
     expect(created.slug).toBe('about-us')
   })
 
-  it('fetches the homepage by slug', async () => {
+  it('fetches the homepage by flag', async () => {
     await payload.create({
       collection: 'pages',
       data: {
         title: 'Home',
         slug: 'home',
+        isHome: true,
       },
       draft: true,
     })
@@ -69,13 +70,38 @@ describe('API', () => {
     const pages = await payload.find({
       collection: 'pages',
       where: {
-        slug: {
-          equals: 'home',
+        isHome: {
+          equals: true,
         },
       },
     })
 
-    expect(pages.docs[0]?.slug).toBe('home')
+    expect(pages.docs[0]?.isHome).toBe(true)
+  })
+
+  it('returns navigation pages in order', async () => {
+    await payload.create({
+      collection: 'pages',
+      data: {
+        title: 'Docs',
+        slug: 'docs',
+        showInNavigation: true,
+        navigationLabel: 'Documentation',
+        navigationOrder: 1,
+      },
+    })
+
+    const pages = await payload.find({
+      collection: 'pages',
+      where: {
+        showInNavigation: {
+          equals: true,
+        },
+      },
+      sort: ['navigationOrder', 'title'],
+    })
+
+    expect(pages.docs[0]?.navigationLabel).toBe('Documentation')
   })
 
   it('registers blog posts in the collection config', async () => {
