@@ -1,4 +1,5 @@
 import { headers as getHeaders } from 'next/headers.js'
+import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 import { getPayload } from 'payload'
 import React from 'react'
 import { fileURLToPath } from 'url'
@@ -19,8 +20,29 @@ export default async function HomePage() {
     depth: 0,
     user,
   })
+  const { docs: homePages } = await payload.find({
+    collection: 'pages',
+    limit: 1,
+    where: { slug: { equals: 'home' } },
+    overrideAccess: false,
+    depth: 0,
+    user,
+  })
+  const { docs: navigationPages } = await payload.find({
+    collection: 'pages',
+    limit: 10,
+    sort: 'title',
+    overrideAccess: false,
+    depth: 0,
+    user,
+  })
 
   const [post] = posts
+  const [homePage] = homePages
+  const homeContent =
+    homePage?.content && typeof homePage.content === 'object'
+      ? convertLexicalToPlaintext({ data: homePage.content })
+      : undefined
 
   const fileURL = `vscode://file/${fileURLToPath(import.meta.url)}`
 
@@ -30,9 +52,19 @@ export default async function HomePage() {
         <p className="subtitle">
           {user ? `Welcome back, ${user.email}.` : 'Welcome to the blog.'}
         </p>
-        <h1>{post?.title ?? 'No posts yet'}</h1>
-        {post?.excerpt && <p>{post.excerpt}</p>}
+        <h1>{homePage?.title ?? post?.title ?? 'No posts yet'}</h1>
+        {homeContent && <p>{homeContent}</p>}
+        {!homeContent && post?.excerpt && <p>{post.excerpt}</p>}
         <div className="links">
+          {navigationPages.map((page) => {
+            const href = page.slug === 'home' ? '/' : `/${page.slug}`
+
+            return (
+              <a key={page.id} href={href}>
+                {page.title}
+              </a>
+            )
+          })}
           <a className="admin" href={payloadConfig.routes.admin} rel="noopener noreferrer">
             Manage posts
           </a>

@@ -56,6 +56,28 @@ describe('API', () => {
     expect(created.slug).toBe('about-us')
   })
 
+  it('fetches the homepage by slug', async () => {
+    await payload.create({
+      collection: 'pages',
+      data: {
+        title: 'Home',
+        slug: 'home',
+      },
+      draft: true,
+    })
+
+    const pages = await payload.find({
+      collection: 'pages',
+      where: {
+        slug: {
+          equals: 'home',
+        },
+      },
+    })
+
+    expect(pages.docs[0]?.slug).toBe('home')
+  })
+
   it('registers blog posts in the collection config', async () => {
     const payloadConfig = await config
     const collectionSlugs = payloadConfig.collections?.map((collection) => collection.slug) ?? []
